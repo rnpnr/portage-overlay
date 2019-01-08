@@ -1,0 +1,65 @@
+diff --git a/spm b/spm
+index b45f2e0..73815f3 100755
+--- a/spm
++++ b/spm
+@@ -15,7 +15,7 @@
+ # You should have received a copy of the GNU General Public License
+ # along with this program. If not, see <http://www.gnu.org/licenses/>.
+ 
+-set -eu
++set -u
+ umask u=rwx,go=
+ 
+ ## Variables
+@@ -56,11 +56,11 @@ readpw() {
+ }
+ 
+ find() {
+-	command find "${STORE_DIR}" -type f -o -type l | grep -Gie "${1}"
++	command find "${STORE_DIR}" -type f -o -type l | grep -ie "${1}.gpg"
+ }
+ 
+ munge() {
+-	abspath="$(readlink -f "${STORE_DIR}"/"${1}")"
++	abspath="$(readlink -f "${STORE_DIR}"/"${1}.gpg")"
+ 	case "${abspath}" in
+ 	"${STORE_DIR}"*)
+ 		eval ${2}=\"${abspath#${STORE_DIR}}\"
+@@ -76,7 +76,7 @@ view() {
+ 
+ ## Commands
+ add() {
+-	[ -e "${STORE_DIR}"/"${1}" ] && usage 'entry already exists'
++	[ -e "${STORE_DIR}"/"${1}.gpg" ] && usage 'entry already exists'
+ 
+ 	password=
+ 	readpw "Password for '${1}': " password
+@@ -87,7 +87,7 @@ add() {
+ 
+ 	mkdir -p "${STORE_DIR}"/"${group}" &&
+ 		printf '%s\n' "${password}" |
+-			gpg --encrypt --output "${STORE_DIR}"/"${1}"
++			gpg --encrypt --output "${STORE_DIR}"/"${1}.gpg"
+ }
+ 
+ list() {
+@@ -97,8 +97,8 @@ list() {
+ }
+ 
+ del() {
+-	entry=$(find "${1}" | head -n2)
+-	check; command rm -i "${entry}" && printf '\n'
++	entry=$(find "${1}" | sed 2q)
++	check; command rm "${entry}" && printf '\n'
+ }
+ 
+ search() {
+@@ -106,7 +106,7 @@ search() {
+ }
+ 
+ show() {
+-	entry=$(find "${1}" | head -n2)
++	entry=$(find "${1}" | sed 2q)
+ 	check; gpg --decrypt "${entry}"
+ }
+ 
