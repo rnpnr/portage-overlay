@@ -7,11 +7,13 @@ SRC_URI="http://download.savannah.gnu.org/releases/tinycc/${P}.tar.bz2"
 LICENSE="LGPL-2.1"
 SLOT="0"
 
+IUSE="+static"
+
 src_configure() {
 	econf --cc=${CC} \
 		--prefix="${EPREFIX}${LOCAL_PREFIX}" \
 		--config-musl \
-		--enable-static	
+		$(use_enable static)
 }
 
 src_install() {
