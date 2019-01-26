@@ -120,6 +120,7 @@ src_prepare() {
 	eapply "${WORKDIR}/firefox"
 
 	eapply "${FILESDIR}"/${P}-blessings-TERM.patch # 654316
+	eapply "${FILESDIR}"/ffmpeg4.patch
 
 	# Enable gnomebreakpad
 	if use debug ; then
