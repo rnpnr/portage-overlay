@@ -25,12 +25,11 @@ if [[ $PV == 9999 ]]; then
 	SRC_URI=""
 else
 	SRC_URI="https://mesa.freedesktop.org/archive/${MY_P}.tar.xz"
-	KEYWORDS="~amd64 ~arm ~arm64 ~mips ~ppc ~x86"
+	KEYWORDS="amd64 arm ~arm64 ~mips ppc x86"
 fi
 
 LICENSE="MIT"
 SLOT="0"
-RESTRICT="!bindist? ( bindist )"
 
 RADEON_CARDS="r100 r200 r300 r600 radeon radeonsi"
 VIDEO_CARDS="${RADEON_CARDS} freedreno i915 i965 imx intel nouveau vc4 virgl vivante vmware"
@@ -39,8 +38,8 @@ for card in ${VIDEO_CARDS}; do
 done
 
 IUSE="${IUSE_VIDEO_CARDS}
-	bindist +classic d3d9 debug +dri3 +egl +gallium +gbm gles1 gles2 unwind
-	+llvm +nptl opencl osmesa pax_kernel pic selinux vaapi valgrind
+	+classic d3d9 debug +dri3 +egl +gallium +gbm gles1 gles2 unwind
+	+llvm osmesa opencl pax_kernel pic selinux vaapi valgrind
 	vdpau vulkan wayland xvmc xa"
 
 REQUIRED_USE="
@@ -211,18 +210,13 @@ DEPEND="${RDEPEND}
 	opencl? (
 		>=sys-devel/gcc-4.6
 	)
+	sys-devel/bison
+	sys-devel/flex
 	sys-devel/gettext
 	virtual/pkgconfig
 	valgrind? ( dev-util/valgrind )
 	x11-base/xorg-proto
-	vulkan? (
-		$(python_gen_any_dep ">=dev-python/mako-0.7.3[\${PYTHON_USEDEP}]")
-	)
-"
-[[ ${PV} == 9999 ]] && DEPEND+="
-	sys-devel/bison
-	sys-devel/flex
-	$(python_gen_any_dep ">=dev-python/mako-0.7.3[\${PYTHON_USEDEP}]")
+	$(python_gen_any_dep ">=dev-python/mako-0.8.0[\${PYTHON_USEDEP}]")
 "
 
 S="${WORKDIR}/${MY_P}"
@@ -238,6 +232,15 @@ x86? (
 		usr/lib*/libOSMesa.so.8.0.0
 	)
 )"
+
+PATCHES=(
+	"${FILESDIR}"/${PN}-17-execinfo.patch
+	"${FILESDIR}"/${PN}-17-musl-string_h.patch
+	"${FILESDIR}"/${PN}-18-musl-invocation_name.patch
+	"${FILESDIR}"/${PN}-18-musl-pthread.patch
+	"${FILESDIR}"/${PN}-18-musl-amdgpu-include-pthread.patch
+	"${FILESDIR}"/${PN}-18-musl-larger-stacksize.patch
+)
 
 llvm_check_deps() {
 	local flags=${MULTILIB_USEDEP}
@@ -263,18 +266,6 @@ pkg_setup() {
 		llvm_pkg_setup
 	fi
 	python-any-r1_pkg_setup
-}
-
-src_prepare() {
-	eapply "${FILESDIR}"/${PN}-17-execinfo.patch
-	eapply "${FILESDIR}"/${PN}-17-musl-string_h.patch
-	eapply "${FILESDIR}"/${PN}-17-musl-invocation_name.patch
-	eapply "${FILESDIR}"/${PN}-18-musl-pthread.patch
-	eapply "${FILESDIR}"/${PN}-18-intel-missing-time_t.patch
-	eapply "${FILESDIR}"/${PN}-18-musl-amdgpu-include-pthread.patch
-	eapply "${FILESDIR}"/${PN}-18-musl-larger-stacksize.patch
-	eapply_user
-	eautoreconf
 }
 
 multilib_src_configure() {
@@ -380,7 +371,6 @@ multilib_src_configure() {
 		--enable-dri \
 		--enable-glx \
 		--enable-shared-glapi \
-		$(use_enable !bindist texture-float) \
 		$(use_enable d3d9 nine) \
 		$(use_enable debug) \
 		$(use_enable dri3) \
@@ -388,7 +378,6 @@ multilib_src_configure() {
 		$(use_enable gbm) \
 		$(use_enable gles1) \
 		$(use_enable gles2) \
-		$(use_enable nptl) \
 		$(use_enable unwind libunwind) \
 		--enable-valgrind=$(usex valgrind auto no) \
 		--enable-llvm-shared-libs \
@@ -431,10 +420,6 @@ multilib_src_install() {
 multilib_src_install_all() {
 	find "${ED}" -name '*.la' -delete
 	einstalldocs
-
-	if use !bindist; then
-		dodoc docs/patents.txt
-	fi
 }
 
 multilib_src_test() {
@@ -456,13 +441,6 @@ pkg_postinst() {
 	# Switch to mesa opencl
 	if use opencl; then
 		eselect opencl set --use-old ${PN}
-	fi
-
-	# warn about patent encumbered texture-float
-	if use !bindist; then
-		elog "USE=\"bindist\" was not set. Potentially patent encumbered code was"
-		elog "enabled. Please see /usr/share/doc/${P}/patents.txt.bz2 for an"
-		elog "explanation."
 	fi
 }
 
