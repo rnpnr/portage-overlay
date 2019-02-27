@@ -6,7 +6,7 @@ VIRTUALX_REQUIRED="pgo"
 WANT_AUTOCONF="2.1"
 MOZ_ESR=1
 
-# Convert the ebuild version to the upstream mozilla version, used by mozlinguas
+# Convert the ebuild version to the upstream mozilla version
 MOZ_PV="${PV/_alpha/a}" # Handle alpha for SRC_URI
 MOZ_PV="${MOZ_PV/_beta/b}" # Handle beta for SRC_URI
 MOZ_PV="${MOZ_PV/_rc/rc}" # Handle rc for SRC_URI
@@ -21,18 +21,17 @@ PATCH="${PN}-52.5-patches-02"
 MOZ_HTTP_URI="https://archive.mozilla.org/pub/${PN}/releases"
 
 MOZCONFIG_OPTIONAL_GTK2ONLY=1
-MOZCONFIG_OPTIONAL_WIFI=1
 
-inherit check-reqs flag-o-matic toolchain-funcs eutils gnome2-utils mozconfig-v6.52 pax-utils xdg-utils autotools virtualx
+inherit check-reqs flag-o-matic toolchain-funcs eutils mozconfig-v6.52 pax-utils autotools virtualx
 
 DESCRIPTION="Firefox Web Browser"
 HOMEPAGE="https://www.mozilla.org/firefox"
 
-KEYWORDS="~alpha amd64 ~arm ~arm64 ~ia64 ~ppc ~ppc64 x86 ~amd64-linux ~x86-linux"
+KEYWORDS="amd64 x86"
 
 SLOT="0"
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
-IUSE="bindist eme-free +gmp-autoupdate hardened hwaccel pgo rust selinux test"
+IUSE="bindist +eme-free gmp-autoupdate hardened +hwaccel pgo rust selinux test"
 RESTRICT="!bindist? ( bindist )"
 
 PATCH_URIS=( https://dev.gentoo.org/~{anarchy,axs,polynomial-c}/mozilla/patchsets/${PATCH}.tar.xz )
@@ -107,13 +106,6 @@ pkg_pretend() {
 	check-reqs_pkg_setup
 }
 
-src_unpack() {
-	unpack ${A}
-
-	# Unpack language packs
-	mozlinguas_src_unpack
-}
-
 src_prepare() {
 	# Apply our patches
 	rm -f "${WORKDIR}"/firefox/2007_fix_nvidia_latest.patch
@@ -126,16 +118,6 @@ src_prepare() {
 	if use debug ; then
 		sed -i -e "s:GNOME_DISABLE_CRASH_DIALOG=1:GNOME_DISABLE_CRASH_DIALOG=0:g" \
 			"${S}"/build/unix/run-mozilla.sh || die "sed failed!"
-	fi
-
-	# Drop -Wl,--as-needed related manipulation for ia64 as it causes ld sefgaults, bug #582432
-	if use ia64 ; then
-		sed -i \
-		-e '/^OS_LIBS += no_as_needed/d' \
-		-e '/^OS_LIBS += as_needed/d' \
-		"${S}"/widget/gtk/mozgtk/gtk2/moz.build \
-		"${S}"/widget/gtk/mozgtk/gtk3/moz.build \
-		|| die "sed failed to drop --as-needed for ia64"
 	fi
 
 	# Ensure that our plugins dir is enabled as default
@@ -182,10 +164,6 @@ src_prepare() {
 
 src_configure() {
 	MEXTENSIONS="default"
-	# Google API keys (see http://www.chromium.org/developers/how-tos/api-keys)
-	# Note: These are for Gentoo Linux use ONLY. For your own distribution, please
-	# get your own set of keys.
-	_google_api_key=AIzaSyDEAOvatFo0eTgsV_ZlEzx0ObmepsMzfAc
 
 	####################################
 	#
@@ -198,18 +176,11 @@ src_configure() {
 
 	use eme-free && mozconfig_annotate '+eme-free' --disable-eme
 
-	# It doesn't compile on alpha without this LDFLAGS
-	use alpha && append-ldflags "-Wl,--no-relax"
-
 	# Add full relro support for hardened
 	use hardened && append-ldflags "-Wl,-z,relro,-z,now"
 
 	# Only available on mozilla-overlay for experimentation -- Removed in Gentoo repo per bug 571180
 	#use egl && mozconfig_annotate 'Enable EGL as GL provider' --with-gl-provider=EGL
-
-	# Setup api key for location services
-	echo -n "${_google_api_key}" > "${S}"/google-api-key
-	mozconfig_annotate '' --with-google-api-keyfile="${S}/google-api-key"
 
 	mozconfig_annotate '' --enable-extensions="${MEXTENSIONS}"
 
@@ -301,18 +272,7 @@ src_install() {
 	MOZ_MAKE_FLAGS="${MAKEOPTS}" SHELL="${SHELL:-${EPREFIX%/}/bin/bash}" \
 	emake DESTDIR="${D}" install
 
-	# Install language packs
-	mozlinguas_src_install
-
-	local size sizes icon_path icon name
 	if use bindist; then
-		sizes="16 32 48"
-		icon_path="${S}/browser/branding/aurora"
-		# Firefox's new rapid release cycle means no more codenames
-		# Let's just stick with this one...
-		icon="aurora"
-		name="Aurora"
-
 		# Override preferences to set the MOZ_DEV_EDITION defaults, since we
 		# don't define MOZ_DEV_EDITION to avoid profile debaucles.
 		# (source: browser/app/profile/firefox.js)
@@ -322,33 +282,6 @@ sticky_pref("lightweightThemes.selectedThemeID", "firefox-devedition@mozilla.org
 sticky_pref("browser.devedition.theme.enabled", true);
 sticky_pref("devtools.theme", "dark");
 PROFILE_EOF
-
-	else
-		sizes="16 22 24 32 256"
-		icon_path="${S}/browser/branding/official"
-		icon="${PN}"
-		name="Mozilla Firefox"
-	fi
-
-	# Install icons and .desktop for menu entry
-	for size in ${sizes}; do
-		insinto "/usr/share/icons/hicolor/${size}x${size}/apps"
-		newins "${icon_path}/default${size}.png" "${icon}.png"
-	done
-	# The 128x128 icon has a different name
-	insinto "/usr/share/icons/hicolor/128x128/apps"
-	newins "${icon_path}/mozicon128.png" "${icon}.png"
-	# Install a 48x48 icon into /usr/share/pixmaps for legacy DEs
-	newicon "${icon_path}/content/icon48.png" "${icon}.png"
-	newmenu "${FILESDIR}/icon/${PN}.desktop" "${PN}.desktop"
-	sed -i -e "s:@NAME@:${name}:" -e "s:@ICON@:${icon}:" \
-		"${ED}/usr/share/applications/${PN}.desktop" || die
-
-	# Add StartupNotify=true bug 237317
-	if use startup-notification ; then
-		echo "StartupNotify=true"\
-			 >> "${ED}/usr/share/applications/${PN}.desktop" \
-			|| die
 	fi
 
 	# Required in order to use plugins and even run firefox on hardened.
@@ -356,8 +289,6 @@ PROFILE_EOF
 }
 
 pkg_preinst() {
-	gnome2_icon_savelist
-
 	# if the apulse libs are available in MOZILLA_FIVE_HOME then apulse
 	# doesn't need to be forced into the LD_LIBRARY_PATH
 	if use pulseaudio && has_version ">=media-sound/apulse-0.1.9" ; then
@@ -376,10 +307,6 @@ pkg_preinst() {
 }
 
 pkg_postinst() {
-	# Update mimedb for the new .desktop file
-	xdg_desktop_database_update
-	gnome2_icon_cache_update
-
 	if ! use gmp-autoupdate && ! use eme-free ; then
 		elog "USE='-gmp-autoupdate' has disabled the following plugins from updating or"
 		elog "installing into new profiles:"
@@ -392,8 +319,4 @@ pkg_postinst() {
 		elog "used for sound.  If you wish to use pulseaudio instead please unmerge"
 		elog "media-sound/apulse."
 	fi
-}
-
-pkg_postrm() {
-	gnome2_icon_cache_update
 }
