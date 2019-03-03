@@ -206,6 +206,8 @@ mozconfig_config() {
 	mozconfig_annotate '' --disable-elf-hack
 
 	# Disable bad features
+	mozconfig_annotate '' --disable-eme
+	mozconfig_annotate '' --disable-updater
 	mozconfig_annotate '' --disable-webrtc
 	mozconfig_annotate '' --disable-necko-wifi
 	mozconfig_annotate '' --disable-dbus
@@ -275,10 +277,6 @@ mozconfig_install_prefs() {
 	local prefs_file="${1}"
 
 	einfo "Adding prefs from mozconfig to ${prefs_file}"
-
-	# set dictionary path, to use system hunspell
-	echo "pref(\"spellchecker.dictionary_path\", \"${EPREFIX}/usr/share/myspell\");" \
-		>>"${prefs_file}" || die
 
 	# force the graphite pref if system-harfbuzz is enabled, since the pref cant disable it
 	if use system-harfbuzz ; then
