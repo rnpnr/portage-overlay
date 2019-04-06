@@ -1,6 +1,3 @@
-# Copyright 1999-2017 Gentoo Foundation
-# Distributed under the terms of the GNU General Public License v2
-
 EAPI=7
 inherit git-r3 savedconfig
 
@@ -10,7 +7,7 @@ EGIT_REPO_URI="https://git.suckless.org/st"
 
 LICENSE="MIT-with-advertising"
 SLOT="0"
-IUSE="savedconfig +static"
+IUSE="savedconfig static"
 
 RDEPEND="
 	>=sys-libs/ncurses-6.0:0=
@@ -33,7 +30,7 @@ src_prepare() {
 		< config.mk > config.mk.new || die
 		mv config.mk.new config.mk
 
-	if uses static; then
+	if use static; then
 		export CFLAGS="${CFLAGS} -static"
 		export LDFLAGS="${LDFLAGS} -static"
 	fi
@@ -43,7 +40,6 @@ src_prepare() {
 
 src_install() {
 	emake DESTDIR="${D}" PREFIX="${EPREFIX}${LOCAL_PREFIX}" install
-	dodoc TODO
 
 	save_config config.h
 }
