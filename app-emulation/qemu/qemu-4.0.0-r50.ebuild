@@ -8,10 +8,10 @@ PYTHON_REQ_USE="ncurses,readline"
 
 PLOCALES="bg de_DE fr_FR hu it tr zh_CN"
 
-FIRMWARE_ABI_VERSION="2.11.1-r50"
+FIRMWARE_ABI_VERSION="4.0.0-r50"
 
 inherit eutils linux-info toolchain-funcs multilib python-r1 \
-	user udev fcaps readme.gentoo-r1 pax-utils l10n xdg-utils
+	udev fcaps readme.gentoo-r1 pax-utils l10n xdg-utils
 
 if [[ ${PV} = *9999* ]]; then
 	EGIT_REPO_URI="git://git.qemu.org/qemu.git"
@@ -148,9 +148,9 @@ SOFTMMU_TOOLS_DEPEND="
 
 X86_FIRMWARE_DEPEND="
 	pin-upstream-blobs? (
-		~sys-firmware/edk2-ovmf-2017_p20180211[binary]
-		~sys-firmware/ipxe-1.0.0_p20180211[binary]
-		~sys-firmware/seabios-1.11.0[binary,seavgabios]
+		~sys-firmware/edk2-ovmf-201905[binary]
+		~sys-firmware/ipxe-1.0.0_p20190728[binary]
+		~sys-firmware/seabios-1.12.0[binary,seavgabios]
 		~sys-firmware/sgabios-0.1_pre8[binary]
 	)
 	!pin-upstream-blobs? (
@@ -161,7 +161,7 @@ X86_FIRMWARE_DEPEND="
 	)"
 PPC64_FIRMWARE_DEPEND="
 	pin-upstream-blobs? (
-		~sys-firmware/seabios-1.11.0[binary,seavgabios]
+		~sys-firmware/seabios-1.12.0[binary,seavgabios]
 	)
 	!pin-upstream-blobs? (
 		>=sys-firmware/seabios-1.10.2[seavgabios]
@@ -169,7 +169,7 @@ PPC64_FIRMWARE_DEPEND="
 "
 
 BDEPEND="
-	${PYTHON_DEPS}
+	$(python_gen_impl_dep)
 	dev-lang/perl
 	sys-apps/texinfo
 	virtual/pkgconfig
@@ -190,7 +190,6 @@ CDEPEND="
 	qemu_softmmu_targets_ppc64? ( ${PPC64_FIRMWARE_DEPEND} )
 "
 DEPEND="${CDEPEND}
-	${PYTHON_DEPS}
 	kernel_linux? ( >=sys-kernel/linux-headers-2.6.35 )
 	static? (
 		${ALL_DEPEND}
@@ -198,6 +197,7 @@ DEPEND="${CDEPEND}
 	)
 	static-user? ( ${ALL_DEPEND} )"
 RDEPEND="${CDEPEND}
+	acct-group/kvm
 	selinux? ( sec-policy/selinux-qemu )"
 
 PATCHES=(
@@ -208,9 +208,12 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-3.1.0-md-clear-md-no.patch
 	"${FILESDIR}"/${PN}-4.0.0-mkdir_systemtap.patch #684902
 	"${FILESDIR}"/${PN}-4.0.0-fix_infiniband_include.patch #686412
+	"${FILESDIR}"/${PN}-4.0.0-linux-headers-5.2.patch
+	"${FILESDIR}"/${PN}-4.0.0-pc-q35-4.0.patch
 	"${FILESDIR}"/fix-sigevent-and-sigval_t.patch
 	"${FILESDIR}"/musl-F_SHLCK-and-F_EXLCK.patch
 	"${FILESDIR}"/0006-linux-user-signal.c-define-__SIGRTMIN-MAX-for-non-GN.patch
+	"${FILESDIR}"/remove_extra_sysinfo_h.patch
 )
 
 QA_PREBUILT="
@@ -312,10 +315,6 @@ pkg_pretend() {
 		eerror "and the right system binary (e.g. qemu-system-x86_64)."
 		die "update your virt configs to not use qemu-kvm"
 	fi
-}
-
-pkg_setup() {
-	enewgroup kvm 78
 }
 
 # Sanity check to make sure target lists are kept up-to-date.
@@ -770,8 +769,8 @@ pkg_postinst() {
 
 	xdg_icon_cache_update
 
-	[[ -f ${EROOT}/usr/libexec/qemu-bridge-helper ]] && \
-		fcaps cap_net_admin /usr/libexec/qemu-bridge-helper
+	[[ -z ${EPREFIX} ]] && [[ -f ${EROOT}/usr/libexec/qemu-bridge-helper ]] && \
+		fcaps cap_net_admin ${EROOT}/usr/libexec/qemu-bridge-helper
 
 	DISABLE_AUTOFORMATTING=true
 	readme.gentoo_print_elog
