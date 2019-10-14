@@ -1,1 +1,7 @@
 Overlay containing ebuilds of varying quality.
+
+Contains fixes for a few programs when using musl libc.
+
+Patches that came from an email are distributed under the terms of the author.
+Patches that did not come from an email were probably written by me and can be
+used as you wish.
