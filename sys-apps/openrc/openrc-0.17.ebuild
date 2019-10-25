@@ -13,15 +13,15 @@ if [[ ${PV} == "9999" ]]; then
 	inherit git-r3
 else
 	SRC_URI="https://dev.gentoo.org/~williamh/dist/${P}.tar.bz2"
-	KEYWORDS="alpha amd64 arm ~arm64 hppa ia64 ~m68k ~mips ppc ppc64 ~s390 ~sh sparc x86 ~amd64-fbsd ~sparc-fbsd ~x86-fbsd"
+	KEYWORDS="alpha amd64 arm ~arm64 hppa ia64 ~m68k ~mips ppc ppc64 ~s390 ~sh sparc x86"
 fi
 
 LICENSE="BSD-2"
 SLOT="0"
 IUSE="audit debug ncurses pam newnet prefix netifrc selinux static-libs
-	tools unicode kernel_linux kernel_FreeBSD"
+	tools unicode kernel_linux"
 
-COMMON_DEPEND="kernel_FreeBSD? ( || ( >=sys-freebsd/freebsd-ubin-9.0_rc sys-process/fuser-bsd ) )
+COMMON_DEPEND="
 	ncurses? ( sys-libs/ncurses:0= )
 	pam? (
 		sys-auth/pambase
@@ -45,7 +45,6 @@ DEPEND="${COMMON_DEPEND}
 RDEPEND="${COMMON_DEPEND}
 	!prefix? (
 		kernel_linux? ( >=sys-apps/sysvinit-2.86-r6 )
-		kernel_FreeBSD? ( sys-freebsd/freebsd-sbin )
 	)
 	selinux? (
 		sec-policy/selinux-base-policy
@@ -84,9 +83,6 @@ src_compile() {
 	if use kernel_linux ; then
 		MAKE_ARGS="${MAKE_ARGS} OS=Linux"
 		brand="Linux"
-	elif use kernel_FreeBSD ; then
-		MAKE_ARGS="${MAKE_ARGS} OS=FreeBSD"
-		brand="FreeBSD"
 	fi
 	export BRANDING="Gentoo ${brand}"
 	use prefix && MAKE_ARGS="${MAKE_ARGS} MKPREFIX=yes PREFIX=${EPREFIX}"
