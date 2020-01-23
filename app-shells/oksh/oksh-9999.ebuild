@@ -16,6 +16,7 @@ src_configure() {
 		$(use_enable ksh) \
 		$(use_enable curses) \
 		--prefix=/ \
+		--bindir=/bin \
 		--mandir=/usr/share/man
 }
 
