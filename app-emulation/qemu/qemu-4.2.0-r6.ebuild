@@ -218,6 +218,7 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-2.5.0-cflags.patch
 	"${FILESDIR}"/${PN}-2.11.1-capstone_include_path.patch
 	"${FILESDIR}"/${PN}-4.0.0-mkdir_systemtap.patch #684902
+	"${FILESDIR}"/${PN}-4.2.0-ati-vga-crash.patch #719266
 	"${FILESDIR}"/fix-sigevent-and-sigval_t.patch
 	"${FILESDIR}"/musl-F_SHLCK-and-F_EXLCK.patch
 	"${FILESDIR}"/0006-linux-user-signal.c-define-__SIGRTMIN-MAX-for-non-GN.patch
