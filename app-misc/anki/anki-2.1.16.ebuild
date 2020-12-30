@@ -10,7 +10,7 @@ inherit desktop optfeature python-single-r1 xdg
 
 DESCRIPTION="A spaced-repetition memory training program (flash cards)"
 HOMEPAGE="https://apps.ankiweb.net"
-SRC_URI="https://apps.ankiweb.net/downloads/archive/${P}-source.tgz -> ${P}.tgz"
+SRC_URI="https://github.com/ankitects/anki/archive/${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="AGPL-3+ BSD MIT GPL-3+ CC-BY-SA-3.0 Apache-2.0 CC-BY-2.5"
 SLOT="0"
@@ -53,7 +53,7 @@ src_prepare() {
 }
 
 src_compile() {
-	:;
+	./tools/build_ui.sh || die
 }
 
 src_test() {
@@ -76,8 +76,8 @@ src_install() {
 	python_newscript runanki anki
 
 	# Localization files go into the anki directory:
-	python_moduleinto anki
-	python_domodule locale
+	#python_moduleinto anki
+	#python_domodule locale
 
 	# not sure if this is correct, but
 	# site-packages/aqt/mediasrv.py wants the directory
