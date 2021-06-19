@@ -1,7 +1,9 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2021 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
+
+inherit flag-o-matic
 
 DESCRIPTION="featureful ncurses based MPD client inspired by ncmpc"
 HOMEPAGE="https://ncmpcpp.rybczak.net/ https://github.com/ncmpcpp/ncmpcpp"
@@ -9,17 +11,16 @@ SRC_URI="https://rybczak.net/ncmpcpp/stable/${P}.tar.bz2"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~ppc ~ppc64 ~sparc ~x86"
-IUSE="clock icu outputs taglib visualizer"
+KEYWORDS="amd64 ~arm ~ppc ~ppc64 ~sparc x86"
+IUSE="clock icu lto outputs taglib visualizer"
 
 RDEPEND="
-	!dev-libs/boost:0/1.57.0
 	>=media-libs/libmpdclient-2.1
-	dev-libs/boost:=[icu?,nls,threads]
+	dev-libs/boost:=[icu?,nls,threads(+)]
 	icu? ( dev-libs/icu:= )
 	net-misc/curl
 	sys-libs/ncurses:=[unicode]
-	sys-libs/readline:*
+	sys-libs/readline:=
 	taglib? ( media-libs/taglib )
 	visualizer? ( sci-libs/fftw:3.0= )
 "
@@ -34,10 +35,13 @@ src_prepare() {
 }
 
 src_configure() {
+	filter-flags '-flto*'
+
 	econf \
 		$(use_enable clock) \
 		$(use_enable outputs) \
 		$(use_enable visualizer) \
+		$(use_with lto) \
 		$(use_with taglib) \
 		$(use_with visualizer fftw)
 }
