@@ -1,9 +1,9 @@
 # Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=5
+EAPI=7
 
-inherit eutils flag-o-matic multilib pam toolchain-funcs
+inherit eutils flag-o-matic multilib pam usr-ldscript toolchain-funcs
 
 DESCRIPTION="OpenRC manages the services, startup and shutdown of a host"
 HOMEPAGE="https://www.gentoo.org/proj/en/base/openrc/"
@@ -54,6 +54,8 @@ RDEPEND="${COMMON_DEPEND}
 
 PDEPEND="netifrc? ( net-misc/netifrc )"
 
+PATCHES=("${FILESDIR}"/rc-logger_h_mark_extern_var.patch)
+
 src_prepare() {
 	sed -i 's:0444:0644:' mk/sys.mk || die
 
@@ -62,8 +64,7 @@ src_prepare() {
 		sed -i "/^GITVER[[:space:]]*=/s:=.*:=${ver}:" mk/gitver.mk || die
 	fi
 
-	# Allow user patches to be applied without modifying the ebuild
-	epatch_user
+	default
 }
 
 src_compile() {
