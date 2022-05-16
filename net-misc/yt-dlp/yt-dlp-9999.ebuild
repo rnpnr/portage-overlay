@@ -53,9 +53,4 @@ pkg_postinst() {
 		elog 'as "youtube-dl". This is strictly for compatibility and it is'
 		elog 'recommended to use "yt-dlp" directly, it may be removed in the future.'
 	fi
-	if has_version media-video/mpv && ! use symlink; then
-		elog
-		elog "To use media-video/mpv with ${PN} you may want to this to your mpv.conf:"
-		elog "script-opts=ytdl_hook-ytdl_path=${PN}"
-	fi
 }
