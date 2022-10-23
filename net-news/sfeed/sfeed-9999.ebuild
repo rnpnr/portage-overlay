@@ -1,4 +1,4 @@
-EAPI=7	
+EAPI=8
 
 inherit git-r3
 
@@ -17,6 +17,14 @@ src_configure() {
 		export CFLAGS="${CFLAGS} -static"
 		export LDFLAGS="${LDFLAGS} -s -static"
 	fi
+}
+
+src_compile() {
+	emake \
+		CFLAGS="${CFLAGS}" \
+		LDFLAGS="${LDFLAGS}" \
+		SFEED_CURSES_LDFLAGS="${LDFLAGS}" \
+		SFEED_CURSES_CFLAGS="${CFLAGS} -DSFEED_MINICURSES"
 }
 
 src_install() {
