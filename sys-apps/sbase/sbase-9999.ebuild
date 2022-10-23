@@ -1,4 +1,4 @@
-EAPI=7
+EAPI=8
 
 inherit git-r3
 
@@ -13,19 +13,18 @@ IUSE="+static"
 src_configure() {
 	default
 
-	sed \
-		-e '/^CC/d' \
-		-e '/^CFLAGS/{s:=:+=:}' \
-		-e '/^LDFLAGS/{s:=:+=:}' \
-		< config.mk > config.mk.new || die
-		mv config.mk.new config.mk
-
 	if use static ; then
 		export LDFLAGS="${LDFLAGS} -s -static"
 	fi
 }
 
+src_compile() {
+	emake \
+		CFLAGS="${CFLAGS}" \
+		LDFLAGS="${LDFLAGS}"
+}
+
 src_install() {
-	emake DESTDIR="${D}" CC=${CC} PREFIX=${EPREFIX}${LOCAL_PREFIX} install
+	emake DESTDIR="${D}" PREFIX=${EPREFIX}${LOCAL_PREFIX} install
 	einstalldocs
 }

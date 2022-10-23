@@ -1,4 +1,4 @@
-EAPI=7
+EAPI=8
 inherit git-r3 savedconfig
 
 DESCRIPTION="a generic, highly customizable, and efficient menu for the X Window System"
@@ -17,17 +17,11 @@ RDEPEND="
 "
 DEPEND="
 	${RDEPEND}
-	virtual/pkgconfig
 	x11-base/xorg-proto
 "
 
 src_prepare() {
 	default
-
-	sed	-e '/^X11INC/{s:X11R6/include:include/X11:}' \
-		-e '/^X11LIB/{s:X11R6/lib:lib/X11:}' \
-		< config.mk > config.mk.new || die
-		mv config.mk.new config.mk
 
 	if use static; then
 		export CFLAGS="${CFLAGS} -static"

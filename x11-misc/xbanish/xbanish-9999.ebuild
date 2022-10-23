@@ -1,4 +1,4 @@
-EAPI=7
+EAPI=8
 inherit git-r3
 
 DESCRIPTION="banish the mouse cursor when typing, show it again when the mouse moves"
@@ -13,8 +13,7 @@ RDEPEND="x11-libs/libX11"
 src_prepare() {
 	default
 
-	sed	-e '/^X11BASE/{s:X11R6:X11:}' \
-		-e '/^MANDIR/{s:man:share/man:}' \
+	sed	-e '/^MANDIR/{s:man:share/man:}' \
 		< Makefile > Makefile.new || die
 	mv Makefile.new Makefile || die
 
