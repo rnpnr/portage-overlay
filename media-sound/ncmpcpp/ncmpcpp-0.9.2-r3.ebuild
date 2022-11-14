@@ -1,9 +1,9 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-inherit flag-o-matic
+inherit autotools flag-o-matic
 
 DESCRIPTION="featureful ncurses based MPD client inspired by ncmpc"
 HOMEPAGE="https://ncmpcpp.rybczak.net/ https://github.com/ncmpcpp/ncmpcpp"
@@ -16,7 +16,7 @@ IUSE="clock icu lto outputs taglib visualizer"
 
 RDEPEND="
 	>=media-libs/libmpdclient-2.1
-	dev-libs/boost:=[icu?,nls,threads(+)]
+	dev-libs/boost:=[icu?,nls]
 	icu? ( dev-libs/icu:= )
 	net-misc/curl
 	sys-libs/ncurses:=[unicode(+)]
@@ -27,8 +27,13 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 BDEPEND="virtual/pkgconfig"
 
+PATCHES=(
+	"${FILESDIR}/${PN}-taglib-pc.patch"
+)
+
 src_prepare() {
 	default
+	eautoreconf
 
 	sed -i -e '/^docdir/d' {,doc/}Makefile{.am,.in} || die
 	sed -i -e 's|COPYING||g' Makefile{.am,.in} || die
