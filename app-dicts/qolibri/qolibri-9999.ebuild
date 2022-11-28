@@ -16,8 +16,6 @@ RDEPEND="
 	sys-libs/zlib
 "
 BDEPEND="
-	dev-util/ninja
-	dev-util/cmake
 	dev-qt/linguist-tools
 "
 
