@@ -10,23 +10,31 @@ LICENSE="public-domain"
 SLOT=0
 IUSE="+static +ksh curses"
 
+RDEPEND="ksh? ( !app-shells/ksh )"
+
 src_configure() {
 	econf CC=${CC} \
 		$(use_enable static) \
-		$(use_enable ksh) \
 		$(use_enable curses) \
-		--prefix=/ \
-		--bindir=/bin \
-		--mandir=/usr/share/man
+		--prefix="${EPREFIX}"/ \
+		--bindir="${EPREFIX}"/bin \
+		--mandir="${EPREFIX}"/usr/share/man
 }
 
 src_install() {
 	emake DESTDIR="${D}" install
+	use ksh && dosym oksh /bin/ksh || die
 	einstalldocs
+	use ksh && dosym oksh.1.gz "${EPREFIX}"/usr/share/man/man1/ksh.1 || die
 }
 
 pkg_postinst() {
-	if ! grep -q '^/bin/ksh$' "${EROOT}"/etc/shells ; then
+	if ! grep -q '^/bin/oksh$' "${EROOT}"/etc/shells ; then
+		ebegin "Updating /etc/shells"
+		echo "/bin/oksh" >> "${EROOT}"/etc/shells
+		eend $?
+	fi
+	if use ksh && ! grep -q '^/bin/ksh$' "${EROOT}"/etc/shells ; then
 		ebegin "Updating /etc/shells"
 		echo "/bin/ksh" >> "${EROOT}"/etc/shells
 		eend $?
