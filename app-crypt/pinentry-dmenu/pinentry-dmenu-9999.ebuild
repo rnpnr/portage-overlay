@@ -2,8 +2,8 @@ EAPI=8
 inherit git-r3 savedconfig
 
 DESCRIPTION="A pinentry program with the charm of dmenu"
-HOMEPAGE="https://github.com/0x766F6964/pinentry-dmenu"
-EGIT_REPO_URI="https://github.com/0x766F6964/pinentry-dmenu.git"
+HOMEPAGE="https://github.com/rnpnr/pinentry-dmenu"
+EGIT_REPO_URI="https://github.com/rnpnr/pinentry-dmenu.git"
 
 LICENSE="MIT"
 SLOT="0"

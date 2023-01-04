@@ -6,7 +6,7 @@ inherit git-r3 savedconfig
 
 DESCRIPTION="a dynamic window manager for X11"
 HOMEPAGE="https://dwm.suckless.org/"
-EGIT_REPO_URI="https://github.com/0x766F6964/dwm.git"
+EGIT_REPO_URI="https://github.com/rnpnr/dwm.git"
 
 LICENSE="MIT"
 SLOT="0"
