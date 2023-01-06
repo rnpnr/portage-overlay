@@ -1,4 +1,4 @@
-EAPI=7
+EAPI=8
 
 DESCRIPTION="A minimal Linux console hex editor"
 HOMEPAGE="https://yx7.cc/code"
