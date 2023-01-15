@@ -10,10 +10,8 @@ LICENSE="GPL-3"
 SLOT=0
 
 RDEPEND="
-	app-admin/pwgen
 	app-crypt/gnupg
 	app-text/tree
-	x11-misc/xclip
 "
 src_compile() { :; }
 
