@@ -1,10 +1,10 @@
-EAPI=7
+EAPI=8
 
 inherit git-r3
 
 DESCRIPTION="Simple PoSix password manager"
-HOMEPAGE="https://notabug.org/kl3/spm/"
-EGIT_REPO_URI="https://notabug.org/kl3/spm.git"
+HOMEPAGE="https://github.com/rnpnr/spm"
+EGIT_REPO_URI="https://github.com/rnpnr/spm.git"
 
 LICENSE="GPL-3"
 SLOT=0
@@ -15,14 +15,9 @@ RDEPEND="
 	app-text/tree
 	x11-misc/xclip
 "
-src_configure() {
-	default
-	eapply "${FILESDIR}"/local.patch
-}
-
 src_compile() { :; }
 
 src_install() {
-	emake DESTDIR=${D} PREFIX=${EPREFIX}${LOCAL_PREFIX} install
-	einstalldocs
+	dobin spm
+	doman spm.1
 }
