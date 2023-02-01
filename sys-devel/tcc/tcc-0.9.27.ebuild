@@ -10,7 +10,11 @@ SLOT="0"
 IUSE="+static"
 
 src_configure() {
-	econf --cc=${CC} \
+	if use static; then
+		LDFLAGS="${LDFLAGS} -static"
+	fi
+
+	econf 	--extra-ldflags="${LDFLAGS}" \
 		--prefix="${EPREFIX}${LOCAL_PREFIX}" \
 		--config-musl \
 		$(use_enable static)
