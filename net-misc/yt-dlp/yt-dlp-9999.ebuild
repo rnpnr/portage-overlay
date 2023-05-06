@@ -1,52 +1,60 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
 DISTUTILS_USE_PEP517=setuptools
-PYTHON_COMPAT=( python3_{8..10} )
+PYTHON_COMPAT=( python3_{9..11} )
 inherit distutils-r1 git-r3 optfeature
 
-DESCRIPTION="More usable youtube-dl fork"
-HOMEPAGE="https://github.com/yt-dlp"
+DESCRIPTION="youtube-dl fork with additional features and fixes"
+HOMEPAGE="https://github.com/yt-dlp/yt-dlp/"
 EGIT_REPO_URI="https://github.com/yt-dlp/yt-dlp.git"
 
 LICENSE="Unlicense"
 SLOT="0"
-IUSE="symlink"
+KEYWORDS=""
+IUSE="man"
 
 RDEPEND="
 	dev-python/pycryptodome[${PYTHON_USEDEP}]
-	symlink? ( !net-misc/youtube-dl )
-"
+	!net-misc/youtube-dl[-yt-dlp(-)]"
+BDEPEND="man? ( virtual/pandoc )"
 
 distutils_enable_tests pytest
 
-python_prepare_all() {
-	distutils-r1_python_prepare_all
+src_prepare() {
+	distutils-r1_src_prepare
 
 	# adjust requires for pycryptodome and optional dependencies (bug #828466)
 	sed -ri requirements.txt \
 		-e "s/^(pycryptodome)x/\1/" \
-		-e "/^(brotli.*|mutagen|websockets)/d" || die
+		-e "/^(brotli.*|certifi|mutagen|websockets)/d" || die
+}
+
+python_compile() {
+	# generate missing files in live, not in compile_all nor prepare
+	# given need lazy before compile and it needs a usable ${PYTHON}
+	emake completions lazy-extractors $(usev man yt-dlp.1)
+
+	distutils-r1_python_compile
 }
 
 python_test() {
-	epytest -m 'not download' -p no:markdown
+	epytest -m 'not download'
 }
 
 python_install_all() {
-	# no manpage because it requires pandoc to generate
+	dodoc README.md Changelog.md supportedsites.md
+	use man && doman yt-dlp.1
 
-	distutils-r1_python_install_all
-
-	use symlink && dosym -r /usr/bin/yt-dlp /usr/bin/youtube-dl
+	make_wrapper youtube-dl "yt-dlp --compat-options youtube-dl"
 }
 
 pkg_postinst() {
 	optfeature "various features (merging tracks, streamed content)" media-video/ffmpeg
 	has_version media-video/atomicparsley || # allow fallback but don't advertise
-	optfeature "embedding metadata thumbnails in MP4/M4A files" media-libs/mutagen
+		optfeature "embedding metadata thumbnails in MP4/M4A files" media-libs/mutagen
 
 	if [[ ! ${REPLACING_VERSIONS} ]]; then
 		elog 'A wrapper using "yt-dlp --compat-options youtube-dl" was installed'
