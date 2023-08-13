@@ -12,21 +12,15 @@ KEYWORDS="~amd64 ~arm ~riscv ~x86"
 DESCRIPTION="modern, legacy free, simple yet efficient vim-like editor (dependencies only)"
 HOMEPAGE="https://github.com/martanne/vis"
 SLOT="0"
-IUSE="+ncurses +lua selinux static test tre"
+IUSE="+ncurses +lua selinux static-libs test tre"
 REQUIRED_USE="lua? ( ${LUA_REQUIRED_USE} )"
 
 # - Known to also work with NetBSD curses
 # lpeg: https://github.com/martanne/vis-test/issues/28
-DEPEND="static? (
-		dev-libs/libtermkey[static-libs]
-		sys-apps/acl[static-libs]
-		ncurses? ( sys-libs/ncurses:0=[static-libs] )
-	)
-	!static? (
-		dev-libs/libtermkey
-		sys-apps/acl
-		ncurses? ( sys-libs/ncurses:0= )
-	)
+DEPEND="
+	dev-libs/libtermkey[static-libs?]
+	sys-apps/acl[static-libs?]
+	ncurses? ( sys-libs/ncurses:0=[static-libs?] )
 	lua? ( ${LUA_DEPS} )
 	tre? ( dev-libs/tre )
 	test? (
