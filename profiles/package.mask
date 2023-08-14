@@ -1,0 +1,5 @@
+# These packages are only here to pull in dependencies. Unless you are
+# developing these and install directly from the src dir you probably want
+# the normal packages.
+=app-editors/vis-0.8-r99
+=x11-wm/dwm-6.4-r99
