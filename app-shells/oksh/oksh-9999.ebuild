@@ -24,8 +24,9 @@ src_configure() {
 src_install() {
 	emake DESTDIR="${D}" install
 	use ksh && dosym oksh /bin/ksh || die
+	manfile=oksh.*
+	use ksh && dosym ${manfile} "${EPREFIX}"/usr/share/man/man1/ksh.${manfile#*.} || die
 	einstalldocs
-	use ksh && dosym oksh.1.gz "${EPREFIX}"/usr/share/man/man1/ksh.1.gz || die
 }
 
 pkg_postinst() {
