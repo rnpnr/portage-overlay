@@ -3,9 +3,9 @@ EAPI=8
 inherit toolchain-funcs
 
 DESCRIPTION="simple X11 rectangle selection tool"
-HOMEPAGE="https://codeberg.org/NRK/sx4"
+HOMEPAGE="https://codeberg.org/NRK/selx"
 
-SRC_URI="https://codeberg.org/NRK/sx4/archive/v${PV}.tar.gz -> ${P}.tar.gz"
+SRC_URI="https://codeberg.org/NRK/selx/archive/v${PV}.tar.gz -> ${P}.tar.gz"
 S="${WORKDIR}/${PN}"
 
 KEYWORDS="~amd64"
@@ -20,10 +20,10 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 
 src_compile() {
-	$(tc-getCC) -o sx4 sx4.c ${CFLAGS} ${LDFLAGS} -l X11 -l Xext
+	$(tc-getCC) -o selx selx.c ${CFLAGS} ${LDFLAGS} -l X11 -l Xext
 }
 
 src_install() {
-	dobin sx4
-	doman sx4.1
+	dobin selx
+	doman selx.1
 }
