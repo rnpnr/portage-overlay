@@ -10,13 +10,14 @@ SLOT="0"
 
 RDEPEND="
 	dev-libs/eb
+	dev-qt/qt5compat
 	dev-qt/qtcore
 	dev-qt/qtmultimedia
 	dev-qt/qtwebengine
 	sys-libs/zlib
 "
 BDEPEND="
-	dev-qt/linguist-tools
+	dev-qt/qttools[linguist]
 "
 
 src_configure() {
