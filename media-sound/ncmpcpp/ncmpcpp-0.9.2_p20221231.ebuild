@@ -1,23 +1,25 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-inherit autotools flag-o-matic
+inherit autotools
 
-DESCRIPTION="featureful ncurses based MPD client inspired by ncmpc"
+NCMPCPP_COMMIT="9f44edf0b1d74da7cefbd498341d59bc52f6043f"
+
+DESCRIPTION="Featureful ncurses based MPD client inspired by ncmpc"
 HOMEPAGE="https://ncmpcpp.rybczak.net/ https://github.com/ncmpcpp/ncmpcpp"
-SRC_URI="https://rybczak.net/ncmpcpp/stable/${P}.tar.bz2"
+SRC_URI="https://github.com/ncmpcpp/ncmpcpp/archive/${NCMPCPP_COMMIT}.tar.gz -> ${P}.gh.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="amd64 ~arm ~ppc ~ppc64 ~sparc x86"
-IUSE="clock icu lto outputs taglib visualizer"
+KEYWORDS="amd64 ~arm ~arm64 ~ppc ~ppc64 ~sparc x86"
+IUSE="clock icu outputs taglib visualizer"
 
 RDEPEND="
-	>=media-libs/libmpdclient-2.1
 	dev-libs/boost:=[icu?,nls]
 	icu? ( dev-libs/icu:= )
+	media-libs/libmpdclient
 	net-misc/curl
 	sys-libs/ncurses:=[unicode(+)]
 	sys-libs/readline:=
@@ -27,9 +29,7 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 BDEPEND="virtual/pkgconfig"
 
-PATCHES=(
-	"${FILESDIR}/${PN}-taglib-pc.patch"
-)
+S="${WORKDIR}/${PN}-${NCMPCPP_COMMIT}"
 
 src_prepare() {
 	default
@@ -40,13 +40,12 @@ src_prepare() {
 }
 
 src_configure() {
-	filter-flags '-flto*'
-
+	# --with-lto only appends -flto
 	econf \
 		$(use_enable clock) \
 		$(use_enable outputs) \
 		$(use_enable visualizer) \
-		$(use_with lto) \
+		--without-lto \
 		$(use_with taglib) \
 		$(use_with visualizer fftw)
 }
