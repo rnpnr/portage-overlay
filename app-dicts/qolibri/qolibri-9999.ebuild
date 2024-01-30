@@ -1,4 +1,4 @@
-EAPI=7
+EAPI=8
 inherit cmake git-r3
 
 DESCRIPTION="A QT-based EPWING dictionary viewer"
@@ -26,6 +26,7 @@ src_configure() {
 	local mycmakeargs=(
 		-DCMAKE_BUILD_TYPE=Release
 		-DCMAKE_INSTALL_PREFIX="${EPREFIX}${LOCAL_PREFIX}"
+		-DQOLIBRI_USE_SYSTEM_EB=ON
 	)
 
 	cmake_src_configure
