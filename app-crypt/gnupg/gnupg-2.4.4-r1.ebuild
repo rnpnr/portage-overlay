@@ -1,4 +1,4 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -9,7 +9,7 @@ EAPI=8
 # (find the one for the current release then subscribe to it +
 # any subsequent ones linked within so you're covered for a while.)
 
-VERIFY_SIG_OPENPGP_KEY_PATH="${BROOT}"/usr/share/openpgp-keys/gnupg.asc
+VERIFY_SIG_OPENPGP_KEY_PATH=/usr/share/openpgp-keys/gnupg.asc
 # in-source builds are not supported: https://dev.gnupg.org/T6313#166339
 inherit flag-o-matic out-of-source multiprocessing systemd toolchain-funcs verify-sig
 
@@ -23,7 +23,7 @@ S="${WORKDIR}/${MY_P}"
 
 LICENSE="GPL-3+"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~loong ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux ~arm64-macos ~ppc-macos ~x64-macos ~x64-solaris"
+KEYWORDS="~alpha amd64 arm ~arm64 ~hppa ~ia64 ~loong ~m68k ~mips ~ppc ppc64 ~riscv ~s390 ~sparc x86 ~amd64-linux ~x86-linux ~arm64-macos ~ppc-macos ~x64-macos ~x64-solaris"
 IUSE="bzip2 doc ldap nls readline selinux +smartcard ssl test +tofu tpm tools usb user-socket wks-server"
 RESTRICT="!test? ( test )"
 REQUIRED_USE="test? ( tofu )"
@@ -44,17 +44,19 @@ DEPEND="
 	smartcard? ( usb? ( virtual/libusb:1 ) )
 	tofu? ( >=dev-db/sqlite-3.27 )
 	tpm? ( >=app-crypt/tpm2-tss-2.4.0:= )
-	ssl? ( >=net-libs/gnutls-3.0:0= )
+	ssl? ( >=net-libs/gnutls-3.2:0= )
 "
 RDEPEND="
 	${DEPEND}
+	nls? ( virtual/libintl )
+	selinux? ( sec-policy/selinux-gpg )
+	wks-server? ( virtual/mta )
+"
+PDEPEND="
 	|| (
 		app-crypt/pinentry
 		app-crypt/pinentry-dmenu
 	)
-	nls? ( virtual/libintl )
-	selinux? ( sec-policy/selinux-gpg )
-	wks-server? ( virtual/mta )
 "
 BDEPEND="
 	virtual/pkgconfig
@@ -70,8 +72,7 @@ DOCS=(
 
 PATCHES=(
 	"${FILESDIR}"/${PN}-2.1.20-gpgscm-Use-shorter-socket-path-lengts-to-improve-tes.patch
-	"${FILESDIR}"/${PN}-2.4.2-fix-emacs.patch
-	"${FILESDIR}"/${P}-no-ldap.patch
+	"${FILESDIR}"/${P}-dirmngr-proxy.patch #924606
 )
 
 src_prepare() {
@@ -113,11 +114,7 @@ my_src_configure() {
 		--enable-large-secmem
 
 		CC_FOR_BUILD="$(tc-getBUILD_CC)"
-		GPG_ERROR_CONFIG="${ESYSROOT}/usr/bin/${CHOST}-gpg-error-config"
-		KSBA_CONFIG="${ESYSROOT}/usr/bin/ksba-config"
-		LIBASSUAN_CONFIG="${ESYSROOT}/usr/bin/libassuan-config"
-		LIBGCRYPT_CONFIG="${ESYSROOT}/usr/bin/${CHOST}-libgcrypt-config"
-		NPTH_CONFIG="${ESYSROOT}/usr/bin/npth-config"
+		ac_cv_path_GPGRT_CONFIG="${ESYSROOT}/usr/bin/${CHOST}-gpgrt-config"
 
 		$("${S}/configure" --help | grep -o -- '--without-.*-prefix')
 	)
