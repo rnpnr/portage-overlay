@@ -5,19 +5,19 @@ EAPI=8
 
 inherit autotools
 
-NCMPCPP_COMMIT="68daf44032784a5b5b74781a9bf3826053eff4a2"
+COMMIT="72d990fe250da1e583677474b3462b9e9894130b"
 
 DESCRIPTION="Featureful ncurses based MPD client inspired by ncmpc"
 HOMEPAGE="
 	https://rybczak.net/ncmpcpp/
 	https://github.com/ncmpcpp/ncmpcpp/
 "
-SRC_URI="https://github.com/ncmpcpp/ncmpcpp/archive/${NCMPCPP_COMMIT}.tar.gz -> ${P}.gh.tar.gz"
-S="${WORKDIR}/${PN}-${NCMPCPP_COMMIT}"
+SRC_URI="https://github.com/ncmpcpp/ncmpcpp/archive/${COMMIT}.tar.gz -> ${P}.gh.tar.gz"
+S="${WORKDIR}/${PN}-${COMMIT}"
 
 LICENSE="GPL-2+"
 SLOT="0"
-KEYWORDS="amd64 ~arm ~arm64 ~ppc ~ppc64 ~sparc x86"
+KEYWORDS="amd64 ~arm ~arm64 ~ppc ~ppc64 ~sparc ~x86"
 IUSE="clock icu outputs taglib visualizer"
 
 RDEPEND="
@@ -32,6 +32,8 @@ RDEPEND="
 "
 DEPEND="${RDEPEND}"
 BDEPEND="virtual/pkgconfig"
+
+DOCS=( CHANGELOG.md README.md )
 
 src_prepare() {
 	default
