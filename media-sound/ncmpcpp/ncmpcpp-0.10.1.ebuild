@@ -5,15 +5,12 @@ EAPI=8
 
 inherit autotools
 
-COMMIT="72d990fe250da1e583677474b3462b9e9894130b"
-
 DESCRIPTION="Featureful ncurses based MPD client inspired by ncmpc"
 HOMEPAGE="
 	https://rybczak.net/ncmpcpp/
 	https://github.com/ncmpcpp/ncmpcpp/
 "
-SRC_URI="https://github.com/ncmpcpp/ncmpcpp/archive/${COMMIT}.tar.gz -> ${P}.gh.tar.gz"
-S="${WORKDIR}/${PN}-${COMMIT}"
+SRC_URI="https://github.com/ncmpcpp/ncmpcpp/archive/refs/tags/${PV}.tar.gz -> ${P}.gh.tar.gz"
 
 LICENSE="GPL-2+"
 SLOT="0"
