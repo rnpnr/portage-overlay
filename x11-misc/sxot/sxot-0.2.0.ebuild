@@ -8,7 +8,7 @@ HOMEPAGE="https://codeberg.org/NRK/sxot"
 SRC_URI="https://codeberg.org/NRK/sxot/archive/v${PV}.tar.gz -> ${P}.tar.gz"
 S="${WORKDIR}/${PN}"
 
-KEYWORDS="~amd64"
+KEYWORDS="~amd64 ~arm64"
 LICENSE="GPL-3+"
 SLOT=0
 IUSE=""
