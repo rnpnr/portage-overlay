@@ -114,7 +114,7 @@ my_src_configure() {
 		--enable-large-secmem
 
 		CC_FOR_BUILD="$(tc-getBUILD_CC)"
-		ac_cv_path_GPGRT_CONFIG="${ESYSROOT}/usr/bin/${CHOST}-gpgrt-config"
+		GPGRT_CONFIG="${ESYSROOT}/usr/bin/${CHOST}-gpgrt-config"
 
 		$("${S}/configure" --help | grep -o -- '--without-.*-prefix')
 	)
@@ -122,6 +122,11 @@ my_src_configure() {
 	if use prefix && use usb; then
 		# bug #649598
 		append-cppflags -I"${ESYSROOT}/usr/include/libusb-1.0"
+	fi
+
+	if [[ ${CHOST} == *-solaris* ]] ; then
+		# https://dev.gnupg.org/T7368
+		export ac_cv_should_define__xopen_source=yes
 	fi
 
 	# bug #663142
