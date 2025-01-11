@@ -1,4 +1,4 @@
-# Copyright 1999-2024 Gentoo Authors
+# Copyright 1999-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -11,7 +11,7 @@ inherit bash-completion-r1 check-reqs flag-o-matic linux-info ninja-utils pax-ut
 
 DESCRIPTION="A JavaScript runtime built on Chrome's V8 JavaScript engine"
 HOMEPAGE="https://nodejs.org/"
-LICENSE="Apache-1.1 Apache-2.0 BSD BSD-2 MIT"
+LICENSE="Apache-1.1 Apache-2.0 BSD BSD-2 MIT npm? ( Artistic-2 )"
 
 if [[ ${PV} == *9999 ]]; then
 	inherit git-r3
@@ -20,7 +20,7 @@ if [[ ${PV} == *9999 ]]; then
 else
 	SRC_URI="https://nodejs.org/dist/v${PV}/node-v${PV}.tar.xz"
 	SLOT="0/$(ver_cut 1)"
-	KEYWORDS="~amd64 ~arm ~arm64 ~loong ~ppc64 ~riscv ~x86 ~amd64-linux ~x64-macos"
+	KEYWORDS="amd64 ~arm ~arm64 ~loong ~ppc64 ~riscv x86 ~amd64-linux ~x64-macos"
 	S="${WORKDIR}/node-v${PV}"
 fi
 
@@ -108,7 +108,7 @@ src_prepare() {
 	fi
 
 	# We need to disable mprotect on two files when it builds Bug 694100.
-	use pax-kernel && PATCHES+=( "${FILESDIR}"/${PN}-20.6.0-paxmarking.patch )
+	use pax-kernel && PATCHES+=( "${FILESDIR}"/${PN}-22.12.0-paxmarking.patch )
 
 	# bug 931256
 	use riscv && PATCHES+=( "${FILESDIR}"/${PN}-22.2.0-riscv.patch )
