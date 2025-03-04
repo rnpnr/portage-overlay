@@ -12,7 +12,7 @@ MY_SWIG=swig-${PN}-${MY_SWIG_VER}
 AUTOTOOLS_AUTO_DEPEND="no"
 DOCS_BUILDER="sphinx"
 DOCS_DIR="docs"
-PYTHON_COMPAT=( python3_{9..12} )
+PYTHON_COMPAT=( python3_{9..13} )
 inherit autotools cmake flag-o-matic optfeature python-single-r1 docs qmake-utils verify-sig xdg
 
 DESCRIPTION="A stand-alone graphics debugging tool"
