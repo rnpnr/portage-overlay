@@ -71,7 +71,6 @@ DOCS=(
 
 PATCHES=(
 	"${FILESDIR}"/${PN}-2.1.20-gpgscm-Use-shorter-socket-path-lengts-to-improve-tes.patch
-	"${FILESDIR}"/${PN}-2.4.5-revert-rfc4880bis.patch # bug #926186
 )
 
 src_prepare() {
