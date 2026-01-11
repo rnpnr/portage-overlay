@@ -1,0 +1,29 @@
+From 26d0688292ba1d04e85903fb1d528c94843ba18e Mon Sep 17 00:00:00 2001
+From: Randy Palamar <randy@rnpnr.xyz>
+Date: Sun, 11 Jan 2026 15:56:44 -0700
+Subject: [PATCH 4/7] always use HOME env variable for home directory
+
+---
+ renderdoc/os/posix/linux/linux_stringio.cpp | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
+
+diff --git a/renderdoc/os/posix/linux/linux_stringio.cpp b/renderdoc/os/posix/linux/linux_stringio.cpp
+index 423263cf5..ba9dcdb6b 100644
+--- a/renderdoc/os/posix/linux/linux_stringio.cpp
++++ b/renderdoc/os/posix/linux/linux_stringio.cpp
+@@ -595,11 +595,7 @@ rdcstr GetTempRootPath()
+ 
+ rdcstr GetAppFolderFilename(const rdcstr &filename)
+ {
+-  passwd *pw = getpwuid(getuid());
+-  rdcstr homedir = pw ? pw->pw_dir : "";
+-
+-  if(homedir.empty())
+-    homedir = Process::GetEnvVariable("HOME");
++  rdcstr homedir = Process::GetEnvVariable("HOME");
+ 
+   if(homedir.empty())
+   {
+-- 
+2.49.0
+

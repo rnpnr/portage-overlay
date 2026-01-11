@@ -1,0 +1,88 @@
+From 957c73f8ca768be1442998b23e491fa327586df8 Mon Sep 17 00:00:00 2001
+From: Randy Palamar <randy@rnpnr.xyz>
+Date: Tue, 4 Mar 2025 15:12:11 -0700
+Subject: [PATCH 1/7] linux: fix build against musl
+
+---
+ renderdoc/3rdparty/plthook/plthook_elf.c     | 6 +++++-
+ renderdoc/os/os_specific.h                   | 1 +
+ renderdoc/os/posix/linux/linux_callstack.cpp | 3 +--
+ renderdoc/os/posix/linux/linux_hook.cpp      | 4 ++++
+ 4 files changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/renderdoc/3rdparty/plthook/plthook_elf.c b/renderdoc/3rdparty/plthook/plthook_elf.c
+index d170d8ea4..32db79bc4 100644
+--- a/renderdoc/3rdparty/plthook/plthook_elf.c
++++ b/renderdoc/3rdparty/plthook/plthook_elf.c
+@@ -240,7 +240,11 @@ int plthook_open_by_address(plthook_t **plthook_out, void *address)
+     struct link_map *lmap = NULL;
+ 
+     *plthook_out = NULL;
++#ifdef __GLIBC__
+     if (dladdr1(address, &info, (void**)&lmap, RTLD_DL_LINKMAP) == 0) {
++#else
++    if (dladdr(address, &info) == 0) {
++#endif
+         set_errmsg("dladdr error");
+         return PLTHOOK_FILE_NOT_FOUND;
+     }
+@@ -250,7 +254,7 @@ int plthook_open_by_address(plthook_t **plthook_out, void *address)
+ 
+ static int plthook_open_executable(plthook_t **plthook_out)
+ {
+-#if defined __linux__
++#if defined __linux__ && defined __GLIBC__
+     return plthook_open_real(plthook_out, _r_debug.r_map);
+ #elif defined __sun
+     const char *auxv_file = "/proc/self/auxv";
+diff --git a/renderdoc/os/os_specific.h b/renderdoc/os/os_specific.h
+index c5884d5ac..671a9aa1b 100644
+--- a/renderdoc/os/os_specific.h
++++ b/renderdoc/os/os_specific.h
+@@ -31,6 +31,7 @@
+ 
+ #pragma once
+ 
++#include <time.h>
+ #include <stdarg.h>
+ #include <stddef.h>
+ #include <stdint.h>
+diff --git a/renderdoc/os/posix/linux/linux_callstack.cpp b/renderdoc/os/posix/linux/linux_callstack.cpp
+index 6d8e49584..08df12150 100644
+--- a/renderdoc/os/posix/linux/linux_callstack.cpp
++++ b/renderdoc/os/posix/linux/linux_callstack.cpp
+@@ -27,7 +27,6 @@
+ #define _GNU_SOURCE
+ #endif
+ 
+-#include <execinfo.h>
+ #include <link.h>
+ #include <stdio.h>
+ #include <string.h>
+@@ -66,7 +65,7 @@ private:
+   {
+     void *addrs_ptr[ARRAY_COUNT(addrs)];
+ 
+-    int ret = backtrace(addrs_ptr, ARRAY_COUNT(addrs));
++    int ret = 0;
+ 
+     numLevels = 0;
+     if(ret > 0)
+diff --git a/renderdoc/os/posix/linux/linux_hook.cpp b/renderdoc/os/posix/linux/linux_hook.cpp
+index cf97cd6da..bce59abf8 100644
+--- a/renderdoc/os/posix/linux/linux_hook.cpp
++++ b/renderdoc/os/posix/linux/linux_hook.cpp
+@@ -36,6 +36,10 @@
+ #include "plthook/plthook.h"
+ #include "strings/string_utils.h"
+ 
++#ifndef __GLIBC__
++#define RTLD_DEEPBIND 0
++#endif
++
+ Threading::CriticalSection libLock;
+ 
+ RDOC_EXTERN_CONFIG(bool, Linux_Debug_PtraceLogging);
+-- 
+2.49.0
+

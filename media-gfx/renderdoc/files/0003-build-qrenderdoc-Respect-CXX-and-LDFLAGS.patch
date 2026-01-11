@@ -1,17 +1,17 @@
-From f83fea90e09d368cd3d8e119a2b3a6d7352d6de6 Mon Sep 17 00:00:00 2001
+From 840c402b4c448978d71eadbc83e8baf677214079 Mon Sep 17 00:00:00 2001
 From: Matthew Smith <matt@offtopica.uk>
 Date: Tue, 8 Feb 2022 18:42:02 +0000
-Subject: [PATCH] build: qrenderdoc: Respect CXX and LDFLAGS
+Subject: [PATCH 3/7] build: qrenderdoc: Respect CXX and LDFLAGS
 
 ---
  qrenderdoc/CMakeLists.txt | 2 ++
  1 file changed, 2 insertions(+)
 
 diff --git a/qrenderdoc/CMakeLists.txt b/qrenderdoc/CMakeLists.txt
-index 486832594..05ad8ba89 100644
+index ef1234dd4..e7ec27c85 100644
 --- a/qrenderdoc/CMakeLists.txt
 +++ b/qrenderdoc/CMakeLists.txt
-@@ -177,7 +177,9 @@ file(WRITE
+@@ -216,7 +216,9 @@ file(WRITE
       "QMAKE_LINK=${CMAKE_CXX_COMPILER}\n"
       "QMAKE_CXXFLAGS+=${warning_flags}\n"
       "QMAKE_CXXFLAGS+=${QMAKE_CXXFLAGS}\n"
@@ -22,5 +22,5 @@ index 486832594..05ad8ba89 100644
       "\n"
       "LIB_SUFFIX=${LIB_SUFFIX}\n"
 -- 
-2.35.1
+2.49.0
 

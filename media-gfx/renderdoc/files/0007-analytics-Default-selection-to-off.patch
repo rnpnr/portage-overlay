@@ -1,0 +1,29 @@
+From e0953da30edc7c57ff9e09dc525e8bc2e9dcbeec Mon Sep 17 00:00:00 2001
+From: Randy Palamar <randy@rnpnr.xyz>
+Date: Sun, 11 Jan 2026 16:04:48 -0700
+Subject: [PATCH 7/7] analytics: Default selection to off
+
+---
+ qrenderdoc/Code/Interface/PersistantConfig.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/qrenderdoc/Code/Interface/PersistantConfig.h b/qrenderdoc/Code/Interface/PersistantConfig.h
+index 0a4d4e0a3..154c6e53f 100644
+--- a/qrenderdoc/Code/Interface/PersistantConfig.h
++++ b/qrenderdoc/Code/Interface/PersistantConfig.h
+@@ -631,10 +631,10 @@ DECLARE_REFLECTION_STRUCT(BugReport);
+       "``True`` if the user has selected to completely opt-out from and disable all analytics "    \
+       "collection and reporting.\n"                                                                \
+       "\n"                                                                                         \
+-      "Defaults to ``False``."                                                                     \
++      "Defaults to ``True``."                                                                      \
+       ""                                                                                           \
+       ":type: bool");                                                                              \
+-  CONFIG_SETTING_VAL(public, bool, bool, Analytics_TotalOptOut, false)                             \
++  CONFIG_SETTING_VAL(public, bool, bool, Analytics_TotalOptOut, true)                              \
+                                                                                                    \
+   DOCUMENT(                                                                                        \
+       "``True`` if the user has remained with analytics turned on, but has chosen to manually "    \
+-- 
+2.49.0
+

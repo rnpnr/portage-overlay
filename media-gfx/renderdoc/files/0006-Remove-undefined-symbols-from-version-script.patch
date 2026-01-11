@@ -1,6 +1,15 @@
-Remove undefined symbols from version script.
+From dac55b78304ed2ac9cd69c897f5f26be41aea4b5 Mon Sep 17 00:00:00 2001
+From: Randy Palamar <randy@rnpnr.xyz>
+Date: Sun, 11 Jan 2026 15:59:09 -0700
+Subject: [PATCH 6/7] Remove undefined symbols from version script.
 
 Bug: https://bugs.gentoo.org/925578
+---
+ renderdoc/renderdoc.version | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/renderdoc/renderdoc.version b/renderdoc/renderdoc.version
+index 5b0e0e535..b9cf54498 100644
 --- a/renderdoc/renderdoc.version
 +++ b/renderdoc/renderdoc.version
 @@ -6,17 +6,14 @@
@@ -21,3 +30,6 @@ Bug: https://bugs.gentoo.org/925578
                  RENDERDOC_*;
                  VK_LAYER_RENDERDOC_*;
          local:
+-- 
+2.49.0
+

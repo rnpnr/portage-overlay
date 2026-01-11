@@ -1,17 +1,17 @@
-From e6c0ee16967d3aa79f645a5a0aad0d50c20987f4 Mon Sep 17 00:00:00 2001
+From 67d9c6cc8c4fd6414b06b520e525786d4c88fa74 Mon Sep 17 00:00:00 2001
 From: Matthew Smith <matt@offtopica.uk>
 Date: Sun, 20 Feb 2022 09:19:03 +0000
-Subject: [PATCH] build: Only search for PySide2 if required
+Subject: [PATCH 5/7] build: Only search for PySide2 if required
 
 ---
  qrenderdoc/CMakeLists.txt | 17 +++++++----------
  1 file changed, 7 insertions(+), 10 deletions(-)
 
 diff --git a/qrenderdoc/CMakeLists.txt b/qrenderdoc/CMakeLists.txt
-index 05ad8ba89..e4470715e 100644
+index e7ec27c85..ec80912b7 100644
 --- a/qrenderdoc/CMakeLists.txt
 +++ b/qrenderdoc/CMakeLists.txt
-@@ -154,9 +154,6 @@ ExternalProject_Add(custom_swig
+@@ -193,9 +193,6 @@ ExternalProject_Add(custom_swig
      BUILD_COMMAND ${GENERATOR_MAKE} ${GENERATOR_MAKE_PARAMS} > /dev/null 2>&1
      INSTALL_COMMAND ${GENERATOR_MAKE} install > /dev/null 2>&1)
  
@@ -21,7 +21,7 @@ index 05ad8ba89..e4470715e 100644
  set(PYTHON_LINK "${PYTHON_LIBRARY}")
  
  # ensure we link the whole python library so that modules have all the exports they need
-@@ -251,7 +248,13 @@ option(QRENDERDOC_ENABLE_PYSIDE2 "Enable PySide2 if found" ON)
+@@ -308,7 +305,13 @@ option(QRENDERDOC_ENABLE_PYSIDE2 "Enable PySide2 if found" ON)
  
  if(NOT QRENDERDOC_ENABLE_PYSIDE2)
      message(STATUS "PySide2 integration disabled")
@@ -36,7 +36,7 @@ index 05ad8ba89..e4470715e 100644
      message(STATUS "Building with PySide2 ${PySide2_VERSION} from ${PySide2_DIR}")
  
      if(NOT PYTHONLIBS_VERSION_STRING MATCHES "${SHIBOKEN_PYTHON_VERSION_MAJOR}.${SHIBOKEN_PYTHON_VERSION_MINOR}")
-@@ -280,12 +283,6 @@ elseif(PySide2_FOUND AND Shiboken2_FOUND AND TARGET Shiboken2::libshiboken AND T
+@@ -337,12 +340,6 @@ elseif(PySide2_FOUND AND Shiboken2_FOUND AND TARGET Shiboken2::libshiboken AND T
           "DEFINES+=PYSIDE2_ENABLED=1\n"
           "DEFINES+=PYSIDE2_SYS_PATH=${PYSIDE_PYTHONPATH}\n"
           "LIBS+=-lshiboken2${SHIBOKEN_PYTHON_SHARED_LIBRARY_SUFFIX}\n")
@@ -50,5 +50,5 @@ index 05ad8ba89..e4470715e 100644
  
  # generate the SWIG interface files
 -- 
-2.35.1
+2.49.0
 

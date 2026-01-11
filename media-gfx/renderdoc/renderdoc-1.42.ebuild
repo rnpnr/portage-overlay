@@ -78,26 +78,26 @@ BDEPEND="
 "
 
 PATCHES=(
-	# The analytics seem very reasonable, and even without this patch
-	# they are NOT sent before the user accepts.  But default the
-	# selection to off, just in case.
-	"${FILESDIR}"/${PN}-1.18-analytics-off.patch
+	"${FILESDIR}"/0001-linux-fix-build-against-musl.patch
+	"${FILESDIR}"/0002-Rework-injection-and-synchronisaion-on-linux.patch
+
+	# Pass CXXFLAGS and LDFLAGS through to qmake when qrenderdoc is built.
+	"${FILESDIR}"/0003-build-qrenderdoc-Respect-CXX-and-LDFLAGS.patch
+
+	# Needed to prevent sandbox violations during build.
+	"${FILESDIR}"/0004-always-use-HOME-env-variable-for-home-directory.patch
 
 	# Only search for PySide2 if pyside2 USE flag is set.
 	# Bug #833627
-	"${FILESDIR}"/${PN}-1.18-conditional-pyside.patch
-
-	# Pass CXXFLAGS and LDFLAGS through to qmake when qrenderdoc is
-	# built.
-	"${FILESDIR}"/${PN}-1.18-system-flags.patch
-
-	# Needed to prevent sandbox violations during build.
-	"${FILESDIR}"/${PN}-1.27-env-home.patch
-
-	"${FILESDIR}"/${PN}-1.30-r1-system-compress.patch
+	"${FILESDIR}"/0005-build-Only-search-for-PySide2-if-required.patch
 
 	# Bug #925578
-	"${FILESDIR}"/${PN}-1.31-lld.patch
+	"${FILESDIR}"/0006-Remove-undefined-symbols-from-version-script.patch
+
+	# The analytics seem very reasonable, and even without this patch
+	# they are NOT sent before the user accepts.  But default the
+	# selection to off, just in case.
+	"${FILESDIR}"/0007-analytics-Default-selection-to-off.patch
 )
 
 DOCS=( util/LINUX_DIST_README )
