@@ -25,5 +25,6 @@ src_compile() {
 
 src_install() {
 	dobin sxot
+	doman sxot.1
 	dobin etc/optipng-pipe
 }
