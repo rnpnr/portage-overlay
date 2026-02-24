@@ -74,6 +74,9 @@ DOCS=(
 
 PATCHES=(
 	"${FILESDIR}"/${PN}-2.1.20-gpgscm-Use-shorter-socket-path-lengts-to-improve-tes.patch
+	"${FILESDIR}"/0001-Fix-stub-functions-to-avoid-LTO-linking-bugs.patch
+	"${FILESDIR}"/0002-Fix-stub-functions-to-avoid-LTO-linking-bugs-followup.patch
+	"${FILESDIR}"/0003-agent-Fix-the-regression-in-pkdecrypt-with-TPM-RSA.patch
 )
 
 src_prepare() {
@@ -81,9 +84,6 @@ src_prepare() {
 }
 
 my_src_configure() {
-	# Upstream don't support LTO, bug #854222.
-	filter-lto
-
 	local myconf=(
 		$(use_enable bzip2)
 		$(use_enable nls)
