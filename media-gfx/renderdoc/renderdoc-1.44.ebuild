@@ -78,9 +78,6 @@ BDEPEND="
 "
 
 PATCHES=(
-	"${FILESDIR}"/0001-linux-fix-build-against-musl.patch
-	"${FILESDIR}"/0002-Rework-injection-and-synchronisaion-on-linux.patch
-
 	# Pass CXXFLAGS and LDFLAGS through to qmake when qrenderdoc is built.
 	"${FILESDIR}"/0003-build-qrenderdoc-Respect-CXX-and-LDFLAGS.patch
 
@@ -119,6 +116,11 @@ src_unpack() {
 }
 
 src_prepare() {
+	if use elibc_musl ; then
+		eapply "${FILESDIR}"/0001-linux-fix-build-against-musl.patch
+		eapply "${FILESDIR}"/0002-Rework-injection-and-synchronisaion-on-linux.patch
+	fi
+
 	cmake_src_prepare
 
 	# Remove the calls to install the documentation files.  Instead,
